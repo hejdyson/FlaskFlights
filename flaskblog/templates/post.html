@@ -1,0 +1,50 @@
+<!-- page for a single post which we can edit or delete -->
+{% extends 'layout.html' %} {% block content %}
+
+<article class="media content-section">
+  <!--  post will also have image of the user - author is backref which gives us access to the user -->
+  <img class="rounded-circle article-img" src="{{ url_for('static', filename='profile_pics/' + post.author.image_file) }}">
+  <div class="media-body">
+    <div class="article-metadata">
+      <!--  displaying only username, not the whole author object -->
+      <a class="mr-2" href="{{ url_for('users.user_post', username=post.author.username) }}">{{ post.author.username }}</a>
+      <!--  displaying only good format of date -->
+      <small class="text-muted">{{ post.date_posted.strftime('%d-%m-%Y, %H:%M') }}</small>
+      {% if post.author == current_user %}
+        <div>
+            <!-- update button without m-1 (margin 1) so that there is not blank space under username and update button is alligned -->
+            <a class="btn btn-secondary btn-sm" href="{{ url_for('posts.update_post', post_id=post.id) }}">Update</a>
+            <button type="button" class="btn btn-danger btn-sm m-1" data-bs-toggle="modal" data-bs-target="#deleteModal">Delete</button>
+        </div>
+      {% endif %}
+    </div>
+    <h2 class="article-title">{{ post.title }}</h2>
+    <p class="article-content">{{ post.content }}</p>
+  </div>
+</article>
+<!-- Modal -->
+<!-- made these changes so it works for bootstrap 5 according to youtube comment - befor delete modal was not showing
+1> data-toggle  to data-bs-toggle
+2> data-target to data-bs-target
+3> data-dismiss to data-bs-dismiss -->
+<div class="modal fade" id="deleteModal" tabindex="-1" role="dialog" aria-labelledby="deleteModalLabel" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="deleteModalLabel">Delete Post?</h5>
+          <button type="button" class="close" data-bs-dismiss="modal" aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+          </button>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+          <!-- action - route for deleting post -->
+          <form action="{{ url_for('posts.delete_post', post_id=post.id) }}" method="POST">
+            <input class="btn btn-danger" type="submit" value="Delete">
+          </form>
+        </div>
+      </div>
+    </div>
+  </div>
+
+{% endblock content %}

@@ -1,0 +1,35 @@
+<!--  homepage will contain posts of the user -->
+{% extends 'layout.html' %} {% block content %}
+<!-- .items because its now a pagination object - we changed it to paginate in video 9 -->
+{% for post in posts.items %}
+<article class="media content-section">
+  <!--  post will also have image of the user - author is backref which gives us access to the user -->
+  <img class="rounded-circle article-img" src="{{ url_for('static', filename='profile_pics/' + post.author.image_file) }}">
+  <div class="media-body">
+    <div class="article-metadata">
+      <!--  displaying only username, not the whole author object -->
+      <a class="mr-2" href="{{ url_for('users.user_post', username=post.author.username) }}">{{ post.author.username }}</a>
+      <!--  displaying only good format of date -->
+      <small class="text-muted">{{ post.date_posted.strftime('%d-%m-%Y, %H:%M') }}</small>
+    </div>
+    <!-- href will be link for post route for the individual post -->
+    <h2><a class="article-title" href="{{ url_for('posts.post', post_id=post.id) }}">{{ post.title }}</a></h2>
+    <p class="article-content">{{ post.content }}</p>
+  </div>
+</article>
+{% endfor %} 
+<!-- looping through pages -->
+<!-- styling how links for other pages look -->
+{% for page_num in posts.iter_pages(left_edge=1, right_edge=1, left_current=2, right_current=2) %}
+  {% if page_num %}
+    {% if posts.page == page_num %}
+      <a class="btn btn-info mb-4" href="{{ url_for('main.home', page=page_num) }}">{{ page_num }}</a>
+    {% else %}
+      <a class="btn btn-outline-info mb-4" href="{{ url_for('main.home', page=page_num) }}">{{ page_num }}</a>
+    {% endif %}
+  {% else %}
+
+  {% endif %}
+{% endfor %}
+
+{% endblock content %}
